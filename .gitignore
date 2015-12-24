@@ -7,6 +7,7 @@
 #test configs
 config.ini
 clients.ini
+sandbox.*
 
 #logs
 logs/
