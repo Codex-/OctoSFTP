@@ -1,0 +1,12 @@
+#ide
+.idea/
+.*~
+*~
+*.pyc
+
+#test configs
+config.ini
+clients.ini
+
+#logs
+logs/
