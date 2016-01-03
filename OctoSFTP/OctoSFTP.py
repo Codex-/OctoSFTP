@@ -5,11 +5,20 @@ import configparser, glob, pysftp, multiprocessing, os, shutil, subprocess
 # Support Modules
 # TODO: Split this program out later.
 
+
+class OctoSFTP:
+    """Main class for program"""
+
+    def __init__(self, config_file='config', client_file='clients.ini'):
+
+        self.settings = AppSettings(config_file)
+
+
 class AppSettings:
     """Class for hosting the application settings as loaded from the supplied
         ini file"""
 
-    def __init__(self, file):
+    def __init__(self, config_file):
         # Config Parser init
         self.config = configparser.ConfigParser()
         self.loaded = False
@@ -38,14 +47,14 @@ class AppSettings:
         self.client_connections = 0
 
         try:
-            if not os.path.exists(file):
+            if not os.path.exists(config_file):
                 raise FileNotFoundError
         except FileNotFoundError:
-            print("{0} not found.".format(file))
+            print("{0} not found.".format(config_file))
             return
 
         try:
-            self.load_settings(file)
+            self.load_settings(config_file)
         except configparser.NoSectionError as missing:
             print("Failed to load settings.")
             print("{0}".format(missing))
