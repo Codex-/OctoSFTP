@@ -20,7 +20,29 @@ To install dependencies, run
 
     pip install -r requirements.txt
     
-#### Using Octo-SFTP
+Using Octo-SFTP
+---------------
+
+#### Configure config.ini
+
+An example configuration is supplied.
+Most of the example config is self-explanatory.
+
+The number of SFTP server connections to establish:
+    
+    [server]
+    connections = 2
+    
+The number of clients to connect to at a time for pulling files:
+
+    [client]
+    connections = 4
+    
+Both of these should be set according to the bandwidth available over the
+network, too high and you may cause issues for other users (worst case.)
+
+
+#### Configure clients.ini
 
 Add clients requiring files to be moved into the `clients.ini` file:
 
