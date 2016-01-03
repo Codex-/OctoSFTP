@@ -1,2 +1,3 @@
 
-from .OctoSFTP import AppSettings
+from .OctoSFTP import *
+from .config import *
