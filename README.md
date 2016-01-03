@@ -2,9 +2,38 @@ Octo-SFTP
 =========
 
 A program written in Python 3 to move files from network clients to an SFTP
-server. 
+server.
 
-Instructions
+Features of Octo-SFTP
+---------------------
+
+ - Multiple connections to SFTP configurable
+ - 
+
+How to install
+--------------
+Good question, will flesh out proper instructions later.
+
+#### Install dependencies
+
+To install dependencies, run
+
+    pip install -r requirements.txt
+    
+#### Using Octo-SFTP
+
+Add clients requiring files to be moved into the `clients.ini` file:
+
+    # Example Category
+    clientpc01
+    clientpc02
+    
+    # Example Category 2
+    clientpc03
+    clientpc04
+
+
+Development
 ------------
 
 #### virtualenv
@@ -29,12 +58,8 @@ Linux:
 
     ./octosftp/Scripts/activate
     
-#### Install dependencies
 
-To install dependencies, run
 
-    pip install -r requirements.txt
-    
 License
 -------
 
