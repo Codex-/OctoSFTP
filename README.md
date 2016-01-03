@@ -1,4 +1,4 @@
-Octo-SFTP
+OctoSFTP
 =========
 
 A program written in Python 3 to move files from network clients to an SFTP
@@ -11,7 +11,7 @@ files from various client PC's and upload them to the supplier/vendor diagnostic
 SFTP server via automation.
 
 
-Features of Octo-SFTP
+Features of OctoSFTP
 ---------------------
 
  - Multiple connections to SFTP server.
