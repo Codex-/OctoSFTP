@@ -4,11 +4,20 @@ Octo-SFTP
 A program written in Python 3 to move files from network clients to an SFTP
 server.
 
+What's the point?
+-----------------
+This program was created in response to requiring to pull 7z/zip diagnostic
+files from various client PC's and upload them to the supplier/vendor diagnostic
+SFTP server via automation.
+
+
 Features of Octo-SFTP
 ---------------------
 
- - Multiple connections to SFTP configurable
- - 
+ - Multiple connections to SFTP server.
+ - Multiple client connections.
+ - Configurable file extension to search for.
+
 
 How to install
 --------------
@@ -20,6 +29,7 @@ To install dependencies, run
 
     pip install -r requirements.txt
     
+
 Using Octo-SFTP
 ---------------
 
@@ -40,7 +50,6 @@ The number of clients to connect to at a time for pulling files:
     
 Both of these should be set according to the bandwidth available over the
 network, too high and you may cause issues for other users (worst case.)
-
 
 #### Configure clients.ini
 
@@ -80,7 +89,6 @@ Linux:
 
     ./octosftp/Scripts/activate
     
-
 
 License
 -------
