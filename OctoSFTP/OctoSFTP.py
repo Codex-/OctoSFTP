@@ -1,17 +1,16 @@
 
 # Python Modules
-import glob, pysftp, multiprocessing, os, shutil, subprocess
-from .config import AppConfig
+import glob, multiprocessing, os, shutil, subprocess
 
 # Support Modules
-# TODO: Split this program out later.
+from .config import AppConfig
+from .server import ServerTasks
 
 
 class OctoSFTP:
     """Main class for program"""
 
     def __init__(self, config_file='config.ini', client_file='clients.ini'):
-
         self.settings = AppConfig(config_file)
         self.clients = ClientList(self.settings, client_file)
 
@@ -172,19 +171,3 @@ class ClientFiles:
         pass
 
 
-class ServerTasks:
-
-    def __init__(self, settings):
-        self.settings = settings
-
-
-    def connect(self):
-        """
-        Establish connection with the SFTP server.
-        :return: Object with established connection to SFTP server.
-        """
-        # TODO: Create try and except so this actually doesn't blow up
-        return pysftp.Connection(self.settings.server_address,
-                                 username=self.settings.server_username,
-                                 password=self.settings.server_password,
-                                 port=self.settings.server_port)
