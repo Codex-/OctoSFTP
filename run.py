@@ -1,3 +1,10 @@
 
+from OctoSFTP import OctoSFTP
+
 if __name__ == '__main__':
-    main()
+    octosftp = OctoSFTP()
+
+    try:
+        octosftp.run()
+    except KeyboardInterrupt:
+        print("Exiting...")

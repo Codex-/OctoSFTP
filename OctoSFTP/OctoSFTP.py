@@ -10,14 +10,15 @@ from .config import AppConfig
 class OctoSFTP:
     """Main class for program"""
 
-    def __init__(self, config_file='config', client_file='clients.ini'):
+    def __init__(self, config_file='config.ini', client_file='clients.ini'):
 
         self.settings = AppConfig(config_file)
         self.clients = ClientList(self.settings, client_file)
 
 
     def run(self):
-        pass
+        print(self.clients)
+
 
 
 class ClientList:
@@ -187,15 +188,3 @@ class ServerTasks:
                                  username=self.settings.server_username,
                                  password=self.settings.server_password,
                                  port=self.settings.server_port)
-
-
-def main():
-    """Main application to process all files"""
-    settings = AppConfig("settings.ini")
-    clients = ClientList(settings, "clients.ini")
-    client_files = ClientFiles(settings, clients)
-
-    print(clients)
-
-if __name__ == '__main__':
-    main()
