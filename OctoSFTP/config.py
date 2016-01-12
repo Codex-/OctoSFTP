@@ -18,10 +18,14 @@ class AppConfig:
         self.server_port = 0
         self.server_dir = ""
         self.server_connections = 0
+        self.server_temp_extension = ""
+        self.server_conflict = ""
 
         # Local paths for files
         self.local_queue = ""
         self.local_processed = ""
+        self.log_level = ""
+        self.log_file = ""
 
         # File properties
         self.file_type = ""
@@ -62,27 +66,20 @@ class AppConfig:
         self.server_port = int(self.config.get("server", "port"))
         self.server_dir = self.config.get("server", "dir")
         self.server_connections = int(self.config.get("server", "connections"))
+        self.server_temp_extension = self.config.get("server", "temp_extension")
+        self.server_conflict = self.config.get("server, conflict")
 
         # Local paths for files
-        try:
-            if not os.path.exists(self.config.get("local", "queue")):
-                raise FileNotFoundError
-            else:
-                self.local_queue = self.config.get("local", "queue")
-        except FileNotFoundError:
-            print("{0} does not exist.".format(
-                self.config.get("local", "queue")))
-            return
+        self.local_queue = self.config.get("local", "queue")
+        self.local_processed = self.config.get("local", "processed")
 
-        try:
-            if not os.path.exists(self.config.get("local", "processed")):
-                raise FileNotFoundError
-            else:
-                self.local_processed = self.config.get("local", "processed")
-        except FileNotFoundError:
-            print("{0} does not exist.".format(
-                self.config.get("local", "processed")))
-            return
+        # Validate local paths exist
+        self.validate_path(self.local_queue)
+        self.validate_path(self.local_processed)
+
+        # Set logging
+        self.log_level = self.config.get("local", "log_level")
+        self.log_file = self.config.get("local", "log_file")
 
         # File properties
         self.file_type = "." + self.config.get("file", "type")
@@ -96,3 +93,14 @@ class AppConfig:
         self.client_connections = int(self.config.get("client", "connections"))
 
         self.loaded = True
+
+    def validate_path(self, path):
+        """
+        Check path specified exists, create if not.
+
+        :param path: Path to be checked
+        """
+        # TODO: move path validation into function on init.
+        # TODO: If path is valid, os.chrdir to correct path
+        if not os.path.exists(path):
+            os.mkdir(path)
