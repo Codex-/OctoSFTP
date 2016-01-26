@@ -1,5 +1,7 @@
 
-import multiprocessing, subprocess
+import subprocess
+from multiprocessing import cpu_count
+from threading import Lock, Thread
 
 class ClientList:
     """Stores client list and support functions for testing clients online"""

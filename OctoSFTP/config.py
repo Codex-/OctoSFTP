@@ -1,6 +1,7 @@
 
 # Python Modules
 import configparser, os
+from multiprocessing import cpu_count
 
 class AppConfig:
     """Class for hosting the application settings as loaded from the supplied
@@ -38,6 +39,8 @@ class AppConfig:
         self.client_threads = 0
         self.client_connections = 0
 
+        #
+
         try:
             if not os.path.exists(config_file):
                 raise FileNotFoundError
@@ -63,9 +66,9 @@ class AppConfig:
         self.server_username = self.config.get("server", "username")
         self.server_password = self.config.get("server", "password")
         self.server_address = self.config.get("server", "address")
-        self.server_port = int(self.config.get("server", "port"))
+        self.server_port = self.config.getint("server", "port")
         self.server_dir = self.config.get("server", "dir")
-        self.server_connections = int(self.config.get("server", "connections"))
+        self.server_connections = self.config.getint("server", "connections")
         self.server_temp_extension = self.config.get("server", "temp_extension")
         self.server_conflict = self.config.get("server, conflict")
 
@@ -73,26 +76,29 @@ class AppConfig:
         self.local_queue = self.config.get("local", "queue")
         self.local_processed = self.config.get("local", "processed")
 
-        # Validate local paths exist
-        self.validate_path(self.local_queue)
-        self.validate_path(self.local_processed)
-
         # Set logging
         self.log_level = self.config.get("local", "log_level")
         self.log_file = self.config.get("local", "log_file")
 
         # File properties
         self.file_type = "." + self.config.get("file", "type")
-        self.file_minsize = int(self.config.get("file", "minsize")) * 1000
-        self.file_attempts = int(self.config.get("file", "attempts"))
+        self.file_minsize = self.config.getint("file", "minsize") * 1000
+        self.file_attempts = self.config.getint("file", "attempts")
 
         # Client settings
         self.client_attempts = self.config.get("client", "attempts")
         self.client_path = (self.config.get("client", "path")).replace(":", "$")
-        self.client_threads = int(self.config.get("client", "threads"))
-        self.client_connections = int(self.config.get("client", "connections"))
+        self.client_threads = self.config.getint("client", "threads")
+        self.client_connections = self.config.getint("client", "connections")
 
-        self.loaded = True
+        # Validate local paths exist
+        self.validate_path(self.local_queue)
+        self.validate_path(self.local_processed)
+
+        # Validate values for threading aren't too high
+        self.server_connections = self.validate_threads(self.server_connections)
+        self.client_threads = self.validate_threads(self.client_threads)
+
 
     def validate_path(self, path):
         """
@@ -104,3 +110,12 @@ class AppConfig:
         # TODO: If path is valid, os.chrdir to correct path
         if not os.path.exists(path):
             os.mkdir(path)
+
+    def validate_threads(self, thread_value):
+        """
+        Checks if the value used for thread count is compatible with system.
+
+        :param thread_value:
+        :return:
+        """
+        return min(cpu_count(), (max(1, thread_value)))

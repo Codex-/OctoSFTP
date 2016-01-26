@@ -10,7 +10,7 @@ class ServerTasks:
         self.config = config
 
         # Establish class connection
-        self.connection = self.connect()
+        # self.connection = self.connect() TODO: See if multipool working with connections this way
 
         self.files = files
 
@@ -20,6 +20,9 @@ class ServerTasks:
         :return: Object with established connection to SFTP server.
         """
         # TODO: Create try and except so this actually doesn't blow up
+        # TODO: The exception is pysftp.Connection.Exception
+        # TODO: paramiko.ssh_exception.AuthenticationException
+        # TODO: paramiko.ssh_exception.SSHException <- port wrong
         return pysftp.Connection(self.config.server_address,
                                  username=self.config.server_username,
                                  password=self.config.server_password,
@@ -88,3 +91,11 @@ class ServerTasks:
             return True
         except:
             return False
+
+    def run(self):
+        """
+        Execute server tasks
+        """
+        if self.files:
+            for file in self.files:
+                self.upload_file(file)
