@@ -16,9 +16,13 @@ class ClientList:
         self.settings = settings
         self.client_file = client_file
 
+        # Threading lock
+        self.lock = Lock()
+
         # Begins populating class lists
         self.load_client_file()
         self.online_clients()
+
 
     def __str__(self):
         """Returns count of offline and online clients"""
@@ -50,30 +54,43 @@ class ClientList:
                                  )
 
         if online == 0:
-            return client, True
+            #print("Online: " + client)
+            self.clients_online.append(client)
+            #return client, True
         else:
-            return client, False
+            #print("Offline: " + client)
+            self.clients_offline.append(client)
+            #return client, False
+
+    def thread_dequeue(self):
+        """
+        Threadsafe queue support function to prevent conflicts
+        :param thread: thread to receive data
+        """
+        while len(self.client_list) > 0:
+            self.lock.acquire()
+            client = self.client_list.pop()
+            self.lock.release()
+
+            # Pass popped client to function
+            self.online_client_test(client)
 
     def online_clients(self):
         """
         Tests if all clients in client_list are online
         """
-        # Spawn a pool for multithreading
-        process_pool = multiprocessing.Pool(
-            processes=self.settings.client_threads
-        )
+        active_threads = []
 
-        # Populate pool and begin
-        pool_results = process_pool.map(self.online_client_test,
-                                        self.client_list)
+        # Spawn instances for multithreading
+        for i in range(self.settings.client_threads):
+            instance = Thread(target=self.thread_dequeue)
+            active_threads.append(instance)
+            instance.start()
 
-        for client in pool_results:
-            if client[1]:
-                self.clients_online.append(client[0])
-            else:
-                self.clients_offline.append(client[0])
+        # Allow threads to complete before proceeding
+        for instance in active_threads:
+            instance.join()
 
-        print(self.clients_online)
         self.clients_online.sort()
         self.clients_offline.sort()
 
