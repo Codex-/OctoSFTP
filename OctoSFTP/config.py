@@ -46,13 +46,14 @@ class AppConfig:
                 raise FileNotFoundError
         except FileNotFoundError:
             print("{0} not found.".format(config_file))
-            return
+            exit()
 
         try:
             self.load_settings(config_file)
         except configparser.NoSectionError as missing:
             print("Failed to load settings.")
             print("{0}".format(missing))
+            exit()
 
     def load_settings(self, file):
         """
@@ -70,7 +71,7 @@ class AppConfig:
         self.server_dir = self.config.get("server", "dir")
         self.server_connections = self.config.getint("server", "connections")
         self.server_temp_extension = self.config.get("server", "temp_extension")
-        self.server_conflict = self.config.get("server, conflict")
+        self.server_conflict = self.config.get("server", "conflict")
 
         # Local paths for files
         self.local_queue = self.config.get("local", "queue")
@@ -108,8 +109,14 @@ class AppConfig:
         """
         # TODO: move path validation into function on init.
         # TODO: If path is valid, os.chrdir to correct path
-        if not os.path.exists(path):
-            os.mkdir(path)
+        try:
+            if not os.path.exists(path):
+                os.mkdir(path)
+        except PermissionError as error:
+            print(error)
+            print("Permission denied: Is the drive selected valid?")
+            print("Update your configuration and try again.")
+            exit()
 
     def validate_threads(self, thread_value):
         """

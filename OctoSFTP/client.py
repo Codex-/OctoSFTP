@@ -1,6 +1,5 @@
 
 import subprocess
-from multiprocessing import cpu_count
 from threading import Lock, Thread
 
 class ClientList:
