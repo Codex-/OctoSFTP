@@ -29,7 +29,7 @@ class AppConfig:
         self.log_file = ""
 
         # File properties
-        self.file_type = ""
+        self.file_types = []
         self.file_minsize = 0
         self.file_attempts = 0
 
@@ -82,7 +82,8 @@ class AppConfig:
         self.log_file = self.config.get("local", "log_file")
 
         # File properties
-        self.file_type = "." + self.config.get("file", "type")
+        self.file_types = ["." + type.strip() for type in
+                           (self.config.get("file", "type")).split(",")]
         self.file_minsize = self.config.getint("file", "minsize") * 1000
         self.file_attempts = self.config.getint("file", "attempts")
 

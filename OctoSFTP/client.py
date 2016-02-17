@@ -28,6 +28,18 @@ class ClientList:
         return "{0} online clients. {1} offline clients.".format(
             len(self.clients_online), len(self.clients_offline))
 
+    def __iter__(self):
+        """
+        :return: iteration for online clients
+        """
+        return self.clients_online.__iter__()
+
+    def __len__(self):
+        """
+        :return: len of clients online
+        """
+        return self.clients_online.__len__()
+
     def load_client_file(self):
         """
         Loads the clients from file

@@ -1,6 +1,7 @@
 
 # python modules
 import os, pysftp
+from threading import Thread, Lock
 
 # TODO: Rewrite to support multiple connections to server
 
@@ -10,7 +11,7 @@ class ServerTasks:
         self.config = config
 
         # Establish class connection
-        # self.connection = self.connect() TODO: See if multipool working with connections this way
+        self.connection = self.connect() # TODO: See if multipool working with connections this way
 
         self.files = files
 
