@@ -23,8 +23,6 @@ class ClientFiles:
         # Threading lock
         self.lock = Lock()
 
-        #self.build_file_list()
-
     def file_list(self, client):
         """
         Creates a list of files for each client to be moved
@@ -32,11 +30,6 @@ class ClientFiles:
         :param client: Client to have file list generated
         :return: Client files if any, otherwise returns None
         """
-        #client_files = (glob.glob(self.file_path.format(client)))
-
-        # client_files = [glob.glob(self.file_path + file_type)
-        #                 for file_type in self.settings.file_types]
-
         client_files = []
 
         for file_type in self.settings.file_types:
@@ -49,7 +42,7 @@ class ClientFiles:
                             self.settings.file_minsize]
 
             if len(client_files) > 0:
-                #print(client, client_files)
+                print(client, client_files)
                 self.client_files[client] = client_files
                 #return client, client_files
 
@@ -58,7 +51,6 @@ class ClientFiles:
     def thread_file_list(self):
         """
         Threadsafe queue support function to prevent conflicts
-        :param thread: thread to receive data
         """
         client_list = self.clients.clients_online
 
@@ -109,6 +101,7 @@ class ClientFiles:
 
             try:
                 shutil.move(file, self.settings.local_queue)
+                #self.files.append(os.path.basename(file))
             except OSError as error:
                 # Todo log that error g
                 print(error)
@@ -139,11 +132,5 @@ class ClientFiles:
 
     def run(self):
         self.build_file_list()
-        # for i in range(len(self.clients)):
-        #     self.clients.pop()
-        #print(self.client_files)
 
-        #self.build_move_files()
-
-
-
+        self.build_move_files()

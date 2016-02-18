@@ -16,7 +16,8 @@ class OctoSFTP:
         self.settings = AppConfig(config_file)
         self.clients = ClientList(self.settings, client_file)
         self.files = ClientFiles(self.settings, self.clients)
+        self.connection = ServerTasks(self.settings)
 
     def run(self):
-        print(self.clients)
         self.files.run()
+        self.connection.run()
