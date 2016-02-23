@@ -87,7 +87,7 @@ Windows:
     
 Linux:
 
-    ./octosftp/Scripts/activate
+    source ./octosftp/bin/activate
     
 
 License

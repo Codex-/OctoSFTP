@@ -50,6 +50,8 @@ class ClientList:
             self.client_list = [client.strip() for client in client_file
                                 if client.find("#") < 0 and client != "\n"]
 
+        self.client_list.sort(reverse=True)
+
     def online_client_test(self, client):
         """
         Pings the client to test if online

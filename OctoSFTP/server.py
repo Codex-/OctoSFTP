@@ -18,6 +18,7 @@ class ServerTasks:
 
         self.dir = []
 
+    def file_list(self):
         for file_type in self.settings.file_types:
             self.dir.extend(glob.glob(self.settings.local_queue +
                                       "/*" +
@@ -25,6 +26,8 @@ class ServerTasks:
 
         self.files = [os.path.basename(file) for file in self.dir]
         self.files.sort()
+
+        print(self.files)
 
     def connect(self):
         """
@@ -183,6 +186,5 @@ class ServerTasks:
         Execute server tasks
         """
         # Todo: FileNotFoundError
-        #self.files = ["main.z7", "main2.z7"]
-
+        self.file_list()
         self.build_file_list()
