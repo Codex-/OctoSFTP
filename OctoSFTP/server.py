@@ -105,6 +105,7 @@ class ServerTasks:
 
         # Begin upload
         try:
+            print("Uploading: " + file)
             connection.put((self.settings.local_queue +
                             "/" +
                             upload_file),
@@ -115,8 +116,23 @@ class ServerTasks:
             os.rename(upload_file, file)
 
             # Move file to completion folder
-            shutil.move(self.settings.local_queue + "/" + file,
+            if os.path.isfile(self.settings.local_processed + "/" + file):
+                dest_file = self.settings.local_processed + "/" + file
+                orig_file = self.settings.local_queue + "/" + file
+                if os.stat(dest_file).st_size == os.stat(orig_file).st_size:
+                    # filename matches and size matches, file can removed.
+                    os.remove(orig_file)
+                elif os.stat(dest_file).st_size > os.stat(orig_file).st_size:
+                    # File in processed folder is larger, remove new file
+                    os.remove(orig_file)
+                else:
+                    os.remove(dest_file)
+                    shutil.move(self.settings.local_queue + "/" + file,
                         self.settings.local_processed)
+            else:
+                shutil.move(self.settings.local_queue + "/" + file,
+                            self.settings.local_processed)
+
         except IOError as error:
             print(error)
             print(file)
