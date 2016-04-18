@@ -1,13 +1,13 @@
 
 # Python Modules
-import configparser, os
+import configparser, logging, os
 from multiprocessing import cpu_count
 
 class AppConfig:
     """Class for hosting the application settings as loaded from the supplied
         ini file"""
 
-    def __init__(self, config_file):
+    def __init__(self, config_file='config.ini'):
         # Config Parser init
         self.config = configparser.ConfigParser()
         self.loaded = False
@@ -78,7 +78,7 @@ class AppConfig:
         self.local_processed = self.config.get("local", "processed")
 
         # Set logging
-        self.log_level = self.config.get("local", "log_level")
+        self.log_level = self.log_level_check(self.config.get("local", "log_level"))
         self.log_file = self.config.get("local", "log_file")
 
         # File properties
@@ -127,3 +127,20 @@ class AppConfig:
         :return:
         """
         return min(cpu_count(), (max(1, thread_value)))
+
+    def log_level_check(self, level):
+        """
+        Determines logging level to set on handler
+
+        :return: logging level
+        """
+        if (level).upper() == "CRITICAL":
+            return logging.CRITICAL
+        elif (level).upper() == "ERROR":
+            return logging.ERROR
+        elif (level).upper() == "WARNING":
+            return logging.WARNING
+        elif (level).upper() == "DEBUG":
+            return logging.DEBUG
+        else:
+            return logging.INFO

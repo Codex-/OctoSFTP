@@ -1,12 +1,16 @@
 
-import subprocess
+import logging, subprocess
 from threading import Lock, Thread
 
 class ClientList:
     """Stores client list and support functions for testing clients online"""
 
-    def __init__(self, settings, client_file):
+    def __init__(self, settings, client_file='clients.ini'):
         """Initialises the class"""
+        # Logging
+        self._logger = logging.getLogger(__name__)
+
+        # Client arrays
         self.client_list = []
 
         self.clients_online = []
@@ -67,11 +71,13 @@ class ClientList:
                                  )
 
         if online == 0:
-            #print("Online: " + client)
+            self._logger.log(logging.INFO, "Client online: " + client)
+            # print("Online: " + client)
             self.clients_online.append(client)
             #return client, True
         else:
-            #print("Offline: " + client)
+            self._logger.log(logging.WARNING, "Client offline: " + client)
+            # print("Offline: " + client)
             self.clients_offline.append(client)
             #return client, False
 
@@ -106,6 +112,10 @@ class ClientList:
 
         self.clients_online.sort()
         self.clients_offline.sort()
+        self._logger.log(logging.INFO, "Clients online: " +
+                         str(len(self.clients_online)))
+        self._logger.log(logging.WARNING, "Clients offline: " +
+                         str(len(self.clients_offline)))
 
         # TODO: Add logging for successful list creation
         # TODO: create logging for offline cases

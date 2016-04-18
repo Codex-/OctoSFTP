@@ -1,5 +1,5 @@
 
-import glob, multiprocessing, os, time, shutil
+import glob, logging, multiprocessing, os, time, shutil
 from threading import Thread, Lock
 
 
@@ -9,6 +9,9 @@ class ClientFiles:
     def __init__(self, settings, clients):
         self.settings = settings
         self.clients = clients
+
+        # Logging
+        self._logger = logging.getLogger(__name__)
 
         # Dictionary of files to be moved, client is key
         self.client_files = dict()
