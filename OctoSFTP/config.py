@@ -134,13 +134,15 @@ class AppConfig:
 
         :return: logging level
         """
-        if (level).upper() == "CRITICAL":
+        level = level.upper()
+
+        if level == "CRITICAL":
             return logging.CRITICAL
-        elif (level).upper() == "ERROR":
+        elif level == "ERROR":
             return logging.ERROR
-        elif (level).upper() == "WARNING":
+        elif level == "WARNING":
             return logging.WARNING
-        elif (level).upper() == "DEBUG":
+        elif level == "DEBUG":
             return logging.DEBUG
         else:
             return logging.INFO
