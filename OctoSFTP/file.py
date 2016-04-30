@@ -1,5 +1,8 @@
 
-import glob, logging, multiprocessing, os, time, shutil
+import glob
+import logging
+import os
+import shutil
 from threading import Thread, Lock
 
 
@@ -16,12 +19,13 @@ class ClientFiles:
         # Dictionary of files to be moved, client is key
         self.client_files = dict()
 
+        self.client_list = []
+
         # Path templates
         self.file_path = ("\\\\{0}\\" +
                           self.settings.client_path +
                           "\\" +
-                          "*")# +
-                          #self.settings.file_type)
+                          "*")
 
         # Threading lock
         self.lock = Lock()
@@ -33,6 +37,7 @@ class ClientFiles:
         :param client: Client to have file list generated
         :return: Client files if any, otherwise returns None
         """
+        # print("Checking " + client + " for files")
         client_files = []
 
         for file_type in self.settings.file_types:
@@ -45,11 +50,10 @@ class ClientFiles:
                             self.settings.file_minsize]
 
             if len(client_files) > 0:
-                print(client, client_files)
+                self._logger.log(logging.INFO, client + ": " +
+                                 str(len(client_files)) + " file(s)")
+                # print(client, client_files)
                 self.client_files[client] = client_files
-                #return client, client_files
-
-        #return  # TODO: Check if needed
 
     def thread_file_list(self):
         """
@@ -92,33 +96,31 @@ class ClientFiles:
             self.move_files(self.client_files[client])
 
     def move_files(self, file_list):
-        print(file_list)
+        # print(file_list)
         for file in file_list:
-            print(os.path.basename(file))
+            # print(os.path.basename(file))
             os.chdir(self.settings.local_queue)
 
             # Check if file exists locally already
             if os.path.exists(os.path.basename(file)):
                 os.remove(os.path.basename(file))
-                #todo log that it had to delete it
+                self._logger.log(logging.WARNING, file + " exists. "
+                                                         "Current file removed")
 
             try:
                 shutil.move(file, self.settings.local_queue)
-                #self.files.append(os.path.basename(file))
+                # self.files.append(os.path.basename(file))
             except OSError as error:
-                # Todo log that error g
-                print(error)
+                self._logger.log(logging.CRITICAL, file + " " + str(error))
+                # print(error)
 
-
-
+            self._logger.log(logging.INFO, file + " moved successfully")
 
     def build_move_files(self):
         """
         Move files from client to local store. This is done as a list per client
         so as to not flood a specific sites WAN link and cause issues with
         stores connectivity.
-
-        :param file_list:
         """
         active_threads = []
         self.client_list = list(self.client_files.keys())
@@ -131,7 +133,6 @@ class ClientFiles:
         # Allow threads to complete before proceeding
         for instance in active_threads:
             instance.join()
-
 
     def run(self):
         self.build_file_list()

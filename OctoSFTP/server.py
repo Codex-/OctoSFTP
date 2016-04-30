@@ -1,21 +1,27 @@
 
 # python modules
-import os, pysftp, glob, shutil
+import glob
+import logging
+import os
+import pysftp
+import shutil
 from threading import Thread, Lock
 
 # TODO: Rewrite to support multiple connections to server
 
+
 class ServerTasks:
 
-    def __init__(self, config, files=None):
+    def __init__(self, config):
         self.settings = config
+
+        # Logging
+        self._logger = logging.getLogger(__name__)
 
         # Threading lock
         self.lock = Lock()
 
-        # Establish class connection
-        #self.connection = self.connect()
-
+        self.files = []
         self.dir = []
 
     def file_list(self):
@@ -27,7 +33,7 @@ class ServerTasks:
         self.files = [os.path.basename(file) for file in self.dir]
         self.files.sort()
 
-        print(self.files)
+        # print(self.files)
 
     def connect(self):
         """
@@ -41,17 +47,17 @@ class ServerTasks:
                                      password=self.settings.server_password,
                                      port=self.settings.server_port)
         except pysftp.AuthenticationException as error:
-            print("auth")
-            print(error)
+            self._logger.log(logging.CRITICAL, "Authentication failed")
+            self._logger.log(logging.CRITICAL, str(error))
             exit()
         except pysftp.ConnectionException as error:
-            print("connection")
-            print(error)
+            self._logger.log(logging.CRITICAL, "Connection failed")
+            self._logger.log(logging.CRITICAL, str(error))
             exit()
         except pysftp.SSHException as error:
-            # Todo: Log these
-            print("port or address")
-            print(error)
+            self._logger.log(logging.CRITICAL, "Port or address invalid or "
+                                               "connection refused")
+            self._logger.log(logging.CRITICAL, str(error))
             exit()
 
     def file_exists(self, connection, file):
@@ -61,12 +67,14 @@ class ServerTasks:
          - Rename file : Recursively calls itself until an available file name
                          is available.
 
+        :param connection:
         :param file:
         """
+        conflict_setting = self.settings.server_conflict.lower()
         if connection.exists(file):
-            if self.settings.server_conflict == "replace":
+            if conflict_setting == "replace":
                 connection.remove(file)
-            elif self.settings.server_conflict == "rename":
+            elif conflict_setting == "rename":
                 # TODO: Change this to work with numbering because _old
                 # is unintuitive
                 old_file = file.replace(self.settings.file_type,
@@ -77,14 +85,13 @@ class ServerTasks:
                 else:
                     connection.rename(file, (file.replace
                                              (self.settings.file_type,
-                                                   "_old" +
-                                                   self.settings.file_type)))
+                                              "_old" +
+                                              self.settings.file_type)))
 
     def upload_file(self, connection, file):
         """
-
+        :param connection:
         :param file:
-        :return:
         """
         # Change to specified queue folder
         os.chdir(self.settings.local_queue)
@@ -105,7 +112,7 @@ class ServerTasks:
 
         # Begin upload
         try:
-            print("Uploading: " + file)
+            # print("Uploading: " + file)
             connection.put((self.settings.local_queue +
                             "/" +
                             upload_file),
@@ -128,14 +135,16 @@ class ServerTasks:
                 else:
                     os.remove(dest_file)
                     shutil.move(self.settings.local_queue + "/" + file,
-                        self.settings.local_processed)
+                                self.settings.local_processed)
             else:
                 shutil.move(self.settings.local_queue + "/" + file,
                             self.settings.local_processed)
 
+            self._logger.log(logging.INFO, file + " uploaded")
+
         except IOError as error:
-            print(error)
-            print(file)
+            # TODO: Investigate error further to recreate conditions
+            self._logger.log(logging.CRITICAL, str(error) + " " + file)
             os.rename(upload_file, file)
             raise IOError
 
@@ -158,8 +167,10 @@ class ServerTasks:
             try:
                 self.upload_file(connection, file)
             except EOFError as error:
-                print(error)
-                print("Connection lost during transfer")
+                self._logger.log(logging.CRITICAL, "Connection lost during "
+                                                   "file transfer")
+                self._logger.log(logging.CRITICAL, str(error))
+
                 # Establish connection for this thread
                 connection = self.connect()
 
@@ -172,10 +183,9 @@ class ServerTasks:
                 self.lock.release()
 
             except FileNotFoundError as error:
-                print(error)
-                print("file missing yee yee")
-                print("attempted to move", file)
-                # Todo Log file as missing
+                self._logger.log(logging.CRITICAL, "File " + file + " not "
+                                                                    "found")
+                self._logger.log(logging.CRITICAL, str(error))
 
             except IOError:
                 self.lock.acquire()
@@ -195,7 +205,6 @@ class ServerTasks:
 
         for instance in active_threads:
             instance.join()
-
 
     def run(self):
         """

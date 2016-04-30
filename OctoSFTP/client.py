@@ -1,6 +1,8 @@
 
-import logging, subprocess
+import logging
+import subprocess
 from threading import Lock, Thread
+
 
 class ClientList:
     """Stores client list and support functions for testing clients online"""
@@ -25,7 +27,6 @@ class ClientList:
         # Begins populating class lists
         self.load_client_file()
         self.online_clients()
-
 
     def __str__(self):
         """Returns count of offline and online clients"""
@@ -72,19 +73,14 @@ class ClientList:
 
         if online == 0:
             self._logger.log(logging.INFO, "Client online: " + client)
-            # print("Online: " + client)
             self.clients_online.append(client)
-            #return client, True
         else:
             self._logger.log(logging.WARNING, "Client offline: " + client)
-            # print("Offline: " + client)
             self.clients_offline.append(client)
-            #return client, False
 
     def thread_dequeue(self):
         """
         Threadsafe queue support function to prevent conflicts
-        :param thread: thread to receive data
         """
         while len(self.client_list) > 0:
             self.lock.acquire()

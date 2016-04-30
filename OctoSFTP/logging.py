@@ -1,12 +1,14 @@
 
-import logging, os
+import logging
+from sys import stdout
 
 # TODO logging everything
+
 
 def load_logging(log_file, log_level=logging.DEBUG):
     """
     Initialise logging
-    :param log_file: log filename
+    :param log_file:
     :param log_level:
     """
     # Initialise logger
@@ -22,3 +24,10 @@ def load_logging(log_file, log_level=logging.DEBUG):
     handler.setFormatter(logging.Formatter(log_template))
 
     logger.addHandler(handler)
+
+    # Create stdout handler
+    stdout_handler = logging.StreamHandler(stdout)
+    stdout_handler.setLevel(log_level)
+    stdout_handler.setFormatter(logging.Formatter(log_template))
+
+    logger.addHandler(stdout_handler)
