@@ -194,7 +194,7 @@ class ServerTasks:
 
         connection.close()
 
-    def build_file_list(self):
+    def upload_file_list(self):
 
         active_threads = []
 
@@ -212,4 +212,5 @@ class ServerTasks:
         """
         # Todo: FileNotFoundError
         self.file_list()
-        self.build_file_list()
+        if len(self.files) > 0:
+            self.upload_file_list()
