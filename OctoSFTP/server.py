@@ -7,8 +7,6 @@ import pysftp
 import shutil
 from threading import Thread, Lock
 
-# TODO: Rewrite to support multiple connections to server
-
 
 class ServerTasks:
 

@@ -2,8 +2,6 @@
 import logging
 from sys import stdout
 
-# TODO logging everything
-
 
 def load_logging(log_file, log_level=logging.DEBUG):
     """
