@@ -21,7 +21,8 @@ Features of OctoSFTP
 
 How to install
 --------------
-Good question, will flesh out proper instructions later.
+Simply git clone the repository locally, and use the example configuration file
+as a base for configuring for your own environment.
 
 #### Install dependencies
 
